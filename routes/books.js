@@ -51,11 +51,10 @@ const { check, validationResult } = require('express-validator');
         }))
     });
     app.put("/books/:id", function(res,req){
-        const book_id = req.params.id;
-        const { id, title, author, publised_date, pages, language, publised_id} = req.body;
+        const books_id = req.params.id;
+        const { title, author, publised_date, pages, language, publised_id} = req.body;
         model.Book.update(
             {
-            id : id,
             title: title,
             author: author,
             publised_date: publised_date,
@@ -65,7 +64,7 @@ const { check, validationResult } = require('express-validator');
             },
             {
                 where: {
-                    id: book_id
+                    id: books_id
                 }
             }
         )
