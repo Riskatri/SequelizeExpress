@@ -1,11 +1,28 @@
 var model = require("../models/index");
+const express = require("express");
+
 
 module.exports = function(app){
-
-    app.post("/books", function(req,res){
-        const { id, title, author, publised_date, pages, language, publised_id} = req.body;
+const { check, validationResult } = require('express-validator');
+    app.post("/books", [ 
+        check('id'),
+        check('title').isLength({min:5}),
+        check('author').isLength({ max:10}),
+        check('published_date'),
+        check('pages').isNumeric(),
+        check('language'),
+        check('published_id')],
+        function(req,res) {
+            const errors = validationResult(req);
+            if(!errors.isEmpty()){
+                return res.status(500).json({
+                    data: [],
+                    message: "GAGAL!"
+                })
+            }
+        const {id, title, author, publised_date, pages, language, publised_id} = req.body;
         model.Book.create({
-            
+            id: id,
             title: title,
             author: author,
             publised_date: publised_date,
@@ -60,14 +77,14 @@ module.exports = function(app){
             error: error
         }))
     });
-    app.delete("books/:id",function(req,res){
+    app.delete("/books/:id",function(req,res){
         const book_id = req.params.id;
         model.Book.destroy({
             where:{
                 id: book_id
             }
         })
-        .then(status => res.status(201).jso({
+        .then(status => res.status(201).json({
             message: "book has been delete"
         }))
         .catch(error => res.status(500).json({
